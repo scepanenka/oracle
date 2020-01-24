@@ -1,13 +1,11 @@
-DROP TABLE t_supplier;
-CREATE TABLE t_supplier 
+CREATE TABLE t_supplier
 (
     id_supplier NUMBER, 
     moniker VARCHAR2(50), 
     name VARCHAR2(50)    
 );
 
-DROP TABLE t_supply;
-CREATE TABLE t_supply 
+CREATE TABLE t_supply
 (
     id_supply NUMBER,
     code VARCHAR2(30),
@@ -19,8 +17,7 @@ CREATE TABLE t_supply
     nds NUMBER (14,2)
 );
 
-DROP TABLE t_supply_str;
-CREATE TABLE t_supply_str 
+CREATE TABLE t_supply_str
 (
     id_supply_str NUMBER,
     id_supply NUMBER,
@@ -31,14 +28,12 @@ CREATE TABLE t_supply_str
     price NUMBER(8,2)
 );
 
-DROP TABLE t_rest;
 CREATE TABLE t_rest
 (
     id_ware NUMBER,
     qty NUMBER(6)
 );
 
-DROP TABLE t_rest_hist;
 CREATE TABLE t_rest_hist
 (
     id_ware NUMBER,
@@ -47,7 +42,6 @@ CREATE TABLE t_rest_hist
     qty NUMBER(6)
 );
 
-DROP TABLE t_ctl_node;
 CREATE TABLE t_ctl_node
 (
     id_ctl_node NUMBER,
@@ -57,7 +51,6 @@ CREATE TABLE t_ctl_node
     name VARCHAR2(100)
 );
 
-DROP TABLE t_model;
 CREATE TABLE t_model (
     id_model NUMBER,
     moniker VARCHAR2(12),
@@ -69,7 +62,6 @@ CREATE TABLE t_model (
     price NUMBER(8,2)
 );
 
-DROP TABLE t_price_model;
 CREATE TABLE t_price_model (
     id_model NUMBER,
     dt_beg DATE,
@@ -77,14 +69,12 @@ CREATE TABLE t_price_model (
     price NUMBER(8,2)
 );
 
-DROP TABLE t_dept;
 CREATE TABLE t_dept (
     id_dept NUMBER,
     name VARCHAR2(50),
     id_parent NUMBER
 );
 
-DROP TABLE t_client;
 CREATE TABLE t_client (
   id_client NUMBER,
   id_dept NUMBER,
@@ -92,7 +82,6 @@ CREATE TABLE t_client (
   name VARCHAR2(50)
 );
 
-DROP TABLE t_sale;
 CREATE TABLE t_sale (
   id_sale NUMBER,
   num VARCHAR2(30),
@@ -105,7 +94,6 @@ CREATE TABLE t_sale (
   nds NUMBER (14,2)
 );
 
-DROP TABLE t_sale_str;
 CREATE TABLE t_sale_str (
   id_sale_str NUMBER,
   id_sale NUMBER,
@@ -118,7 +106,6 @@ CREATE TABLE t_sale_str (
   nds NUMBER (14,2)
 );
 
-DROP TABLE t_price_ware;
 CREATE TABLE t_price_ware (
     id_ware NUMBER,
     dt_beg DATE,
@@ -126,7 +113,6 @@ CREATE TABLE t_price_ware (
     price NUMBER (8,2)
 );
 
-DROP TABLE t_ware;
 CREATE TABLE t_ware(
   id_ware NUMBER,
   moniker VARCHAR2(12),
@@ -137,7 +123,6 @@ CREATE TABLE t_ware(
   price NUMBER(8,2)
 );
 
-DROP TABLE t_sale_rep;
 CREATE TABLE t_sale_rep (
     id_ware NUMBER,
     month DATE,

@@ -1,1 +1,1 @@
-# oracle
+# oracle pl/sql learning tasks
