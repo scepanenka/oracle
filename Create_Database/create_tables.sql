@@ -92,6 +92,8 @@ CREATE TABLE t_client (
   id_dept NUMBER,
   moniker VARCHAR2(12) UNIQUE NOT NULL,
   name VARCHAR2(50) NOT NULL,
+  is_vip NUMBER(1),
+  town VARCHAR2(25),
   PRIMARY KEY (id_client)
 );
 
