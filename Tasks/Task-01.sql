@@ -12,6 +12,6 @@ CREATE OR REPLACE TRIGGER t_supply_str_biur_trg
         old.qty <> new.qty
         )
 BEGIN
-    :new.summa:= :new.price * :new.qty;
-    :new.nds:= :new.summa * 0.2;
+    :new.summa := :new.price * :new.qty;
+    :new.nds := :new.summa * 0.2;
 end t_supply_str_biur_trg;

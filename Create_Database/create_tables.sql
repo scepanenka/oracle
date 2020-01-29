@@ -92,7 +92,7 @@ CREATE TABLE t_client (
   id_dept NUMBER,
   moniker VARCHAR2(12) UNIQUE NOT NULL,
   name VARCHAR2(50) NOT NULL,
-  is_vip NUMBER(1),
+  is_vip NUMBER(1) DEFAULT 0 NOT NULL,
   town VARCHAR2(25),
   PRIMARY KEY (id_client)
 );
@@ -103,7 +103,6 @@ CREATE TABLE t_sale (
   dt DATE,
   id_client NUMBER NOT NULL,
   e_state SMALLINT NOT NULL,
-  price NUMBER(8,2),
   discount NUMBER(8,6),
   summa NUMBER(14,2),
   nds NUMBER (14,2),
