@@ -6,8 +6,8 @@ FROM T_CTL_NODE n
 JOIN (
     SELECT
            n.ID_CTL_NODE as id_node,
-           COUNT(m.ID_MODEL) as models_cnt,
-           COUNT(w.ID_WARE) as wares_cnt
+           COUNT(distinct m.ID_MODEL) as models_cnt,
+           COUNT(distinct w.ID_WARE) as wares_cnt
     FROM T_CTL_NODE n
     LEFT JOIN T_MODEL m ON n.ID_CTL_NODE = m.ID_NODE
     LEFT JOIN T_WARE w ON m.ID_MODEL = w.ID_MODEL
