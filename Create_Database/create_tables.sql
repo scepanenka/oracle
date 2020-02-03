@@ -97,13 +97,32 @@ CREATE TABLE t_client (
   PRIMARY KEY (id_client)
 );
 
+CREATE TABLE t_ware(
+  id_ware NUMBER,
+  moniker VARCHAR2(12) UNIQUE NOT NULL,
+  name VARCHAR2(50) NOT NULL,
+  id_model NUMBER NOT NULL,
+  sz_orig VARCHAR2(30),
+  sz_rus VARCHAR2(30),
+  price NUMBER(8,2) NOT NULL,
+  PRIMARY KEY (id_ware),
+  CONSTRAINT ware_price_ch CHECK ( price > 0 )
+);
+
+CREATE TABLE t_price_ware (
+    id_ware NUMBER NOT NULL,
+    dt_beg DATE,
+    dt_end DATE,
+    price NUMBER (8,2) NOT NULL
+);
+
 CREATE TABLE t_sale (
   id_sale NUMBER,
   num VARCHAR2(30),
   dt DATE,
   id_client NUMBER NOT NULL,
   e_state SMALLINT NOT NULL,
-  discount NUMBER(8,6),
+  discount NUMBER(8,6) default 0,
   summa NUMBER(14,2),
   nds NUMBER (14,2),
   PRIMARY KEY (id_sale)
@@ -116,31 +135,13 @@ CREATE TABLE t_sale_str (
   id_ware NUMBER,
   qty NUMBER(6),
   price NUMBER(8,2),
-  discount NUMBER(8,2),
+  discount NUMBER(8,2) default 0,
+  disc_price NUMBER(8,2),
   summa NUMBER(14,2),
   nds NUMBER (14,2),
   PRIMARY KEY (id_sale_str),
   CONSTRAINT sale_qty_ch CHECK ( qty > 0 ),
   CONSTRAINT sale_price_ch CHECK ( price > 0 )
-);
-
-CREATE TABLE t_price_ware (
-    id_ware NUMBER NOT NULL,
-    dt_beg DATE,
-    dt_end DATE,
-    price NUMBER (8,2) NOT NULL
-);
-
-CREATE TABLE t_ware(
-  id_ware NUMBER,
-  moniker VARCHAR2(12) UNIQUE NOT NULL,
-  name VARCHAR2(50) NOT NULL,
-  id_model NUMBER NOT NULL,
-  sz_orig VARCHAR2(30),
-  sz_rus VARCHAR2(30),
-  price NUMBER(8,2) NOT NULL,
-  PRIMARY KEY (id_ware),
-  CONSTRAINT ware_price_ch CHECK ( price > 0 )
 );
 
 CREATE TABLE t_sale_rep (
@@ -161,3 +162,55 @@ CREATE TABLE t_state (
     name VARCHAR2(12) NOT NULL,
     PRIMARY KEY (id_state)
 );
+
+-- Триггер для строки поставки, автоматически вычисляющий сумму и НДС строки.
+-- Следующий шаг — вычисление в триггере суммы и НДС заголовка поставки по изменению в строках.
+
+CREATE OR REPLACE TRIGGER t_supply_str_biur_trg
+    BEFORE UPDATE OF QTY, PRICE OR INSERT OR DELETE
+    ON T_SUPPLY_STR
+    FOR EACH ROW
+    WHEN (
+            old.price IS NULL OR
+            old.qty IS NULL OR
+            old.price <> new.price OR
+            old.qty <> new.qty OR
+            (OLD.SUMMA IS NOT NULL AND NEW.SUMMA IS NULL)
+        )
+BEGIN
+    IF DELETING
+    THEN
+        BEGIN
+            UPDATE T_SUPPLY
+            SET SUMMA = NVL(SUMMA, 0) - NVL(:OLD.SUMMA, 0),
+                NDS   = NVL(NDS, 0) - NVL(:old.nds, 0)
+            WHERE T_SUPPLY.ID_SUPPLY = :old.id_supply;
+        end;
+    ELSE
+        BEGIN
+            :new.summa := :new.price * :new.qty;
+            :new.nds := :new.summa * 0.2;
+            UPDATE T_SUPPLY
+            SET SUMMA = NVL(SUMMA, 0) + NVL(:new.summa, 0) - NVL(:OLD.SUMMA, 0),
+                NDS   = NVL(NDS, 0) + NVL(:new.nds, 0) - NVL(:OLD.NDS, 0)
+            WHERE T_SUPPLY.ID_SUPPLY = :new.id_supply;
+        END;
+    END IF;
+end t_supply_str_biur_trg;
+
+-- Триггер, блокирующий установку скидки более 20% для «неVIP»-клиентов.
+
+CREATE OR REPLACE TRIGGER t_sale_bui_trg
+    BEFORE UPDATE OF DISCOUNT OR INSERT ON T_SALE
+    FOR EACH ROW
+    DECLARE
+        l_is_vip T_CLIENT.IS_VIP%type;
+BEGIN
+    SELECT IS_VIP INTO l_is_vip
+    FROM T_CLIENT
+        WHERE T_CLIENT.ID_CLIENT = :NEW.ID_CLIENT;
+    IF :NEW.discount > 20 and l_is_vip = 0
+        THEN RAISE_APPLICATION_ERROR(-20000, 'Discount ' || :new.DISCOUNT || '% is possible only for VIP clients.');
+        END IF;
+end t_sale_bui_trg;
+
