@@ -22,3 +22,4 @@ BEFORE INSERT OR UPDATE ON T_SALE_STR
         :NEW.disc_price := l_price_ware*(1 - NVL(:NEW.discount, 0)/100);
 
     end t_sale_str_biur_price_trg;
+
