@@ -1,9 +1,9 @@
 CREATE OR REPLACE PROCEDURE drop_table_if_exists (tbl_name IN VARCHAR2)
 IS
-    TBL_EXIST  NUMBER;
+    l_tbl_exist  NUMBER;
 BEGIN
-SELECT COUNT(*) INTO TBL_EXIST FROM USER_TABLES WHERE table_name = tbl_name;
-IF TBL_EXIST = 1 THEN
+SELECT COUNT(*) INTO l_tbl_exist FROM USER_TABLES WHERE table_name = tbl_name;
+IF l_tbl_exist = 1 THEN
     EXECUTE IMMEDIATE 'DROP TABLE ' || tbl_name || ' CASCADE CONSTRAINTS';
     DBMS_OUTPUT.PUT_LINE('Table ' || tbl_name || ' dropped.');
 ELSE DBMS_OUTPUT.PUT_LINE('Table ' || tbl_name || ' not exist.');
