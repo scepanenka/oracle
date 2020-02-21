@@ -133,3 +133,11 @@ CREATE OR REPLACE TRIGGER t_sale_str_iduc_trg
     END AFTER STATEMENT;
     END t_sale_str_iduc_trg;
 /
+
+CREATE OR REPLACE TRIGGER t_ware_i_trg
+    AFTER INSERT ON t_ware
+    FOR EACH ROW
+BEGIN
+   INSERT INTO T_REST VALUES (:NEW.id_ware, 0);
+   INSERT INTO T_REST_HIST VALUES (:NEW.id_ware, SYSDATE, NULL, 0);
+END;

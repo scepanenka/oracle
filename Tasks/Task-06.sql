@@ -48,6 +48,7 @@ BEGIN
     END LOOP;
     EXCEPTION
     WHEN ware_not_exist
-    THEN DBMS_OUTPUT.PUT_LINE('Ware not exist');
+    THEN
+        RAISE_APPLICATION_ERROR(-20101, 'Ware not exist');
 END t_sale_ar_u_trg;
 /
