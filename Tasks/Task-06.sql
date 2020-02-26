@@ -3,7 +3,7 @@
 -- всех накладных — остаток должен стать нулевым. После этого — снова исполнить все накладные и проверить,
 -- что результат совпал — используя для сравнения таблицу истории остатков.
 
-CREATE OR REPLACE TRIGGER t_supply_ar_u_trg
+CREATE OR REPLACE TRIGGER t_supply_aur_trg
 AFTER UPDATE OF e_state ON t_supply
 FOR EACH ROW
     WHEN ( OLD.e_state <> NEW.e_state )
@@ -16,14 +16,18 @@ BEGIN
         SELECT COUNT(*) INTO rest_exists FROM t_rest WHERE id_ware = w.id_ware;
         IF (rest_exists) = 0
             AND :NEW.e_state = 1
-            THEN INSERT INTO T_REST VALUES (w.id_ware, w.qty);
+            THEN
+                BEGIN
+                INSERT INTO t_rest VALUES (w.id_ware, w.qty);
+                INSERT INTO t_rest_hist VALUES (w.id_ware, SYSDATE, NULL, w.qty);
+                END;
         ELSIF (:NEW.e_state = 1)
             THEN UPDATE T_REST SET qty = qty + w.qty WHERE id_ware = w.id_ware;
         ELSIF (:NEW.e_state = 0)
             THEN UPDATE T_REST SET qty = qty - w.qty WHERE id_ware = w.id_ware;
         END IF;
     END LOOP;
-END t_supply_ar_u_trg;
+END t_supply_aur_trg;
 /
 
 CREATE OR REPLACE TRIGGER t_sale_ar_u_trg

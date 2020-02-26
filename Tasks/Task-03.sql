@@ -10,7 +10,6 @@ BEFORE INSERT OR UPDATE ON T_SALE_STR
     DECLARE
         l_price_ware t_price_ware.price%TYPE;
     BEGIN
-
         SELECT pw.PRICE INTO l_price_ware
         FROM T_PRICE_WARE pw, T_SALE s
         WHERE pw.ID_WARE = :NEW.ID_WARE
@@ -20,6 +19,4 @@ BEFORE INSERT OR UPDATE ON T_SALE_STR
 
         :NEW.price := l_price_ware;
         :NEW.disc_price := l_price_ware*(1 - NVL(:NEW.discount, 0)/100);
-
     end t_sale_str_biur_price_trg;
-
