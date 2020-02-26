@@ -42,3 +42,33 @@ BEGIN
     COMMIT;
 END node_move;
 /
+
+CREATE OR REPLACE PROCEDURE node_rename (
+ i_id_node t_ctl_node.id_ctl_node%TYPE,
+ i_new_code t_ctl_node.code%TYPE
+)
+IS
+l_tree_code t_ctl_node.tree_code%TYPE;
+CURSOR child_nodes_cursor IS SELECT id_ctl_node, code FROM t_ctl_node
+        WHERE LEVEL=2
+        CONNECT BY id_parent = PRIOR id_ctl_node
+        START WITH id_ctl_node = i_id_node;
+BEGIN
+    BEGIN
+    SELECT tree_code INTO l_tree_code
+    FROM t_ctl_node WHERE id_ctl_node =
+          (SELECT id_parent FROM t_ctl_node WHERE id_ctl_node = i_id_node);
+    EXCEPTION WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
+    l_tree_code := NVL(l_tree_code, '') || '/' || i_new_code;
+    UPDATE t_ctl_node SET code = i_new_code,
+                          tree_code = l_tree_code
+    WHERE id_ctl_node = i_id_node;
+    FOR  n IN child_nodes_cursor
+    LOOP
+        node_rename(n.ID_CTL_NODE, n.code);
+    end loop;
+    COMMIT;
+END;
+/
