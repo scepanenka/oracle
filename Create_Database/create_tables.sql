@@ -56,9 +56,9 @@ CREATE TABLE t_ctl_node
 (
     id_ctl_node NUMBER,
     id_parent NUMBER,
-    code VARCHAR2(12) NOT NULL ,
-    tree_code VARCHAR2(240) NOT NULL,
-    name VARCHAR2(100) NOT NULL,
+    code VARCHAR2(12) NOT NULL,
+    tree_code VARCHAR2(240),
+    name VARCHAR2(100),
     PRIMARY KEY (id_ctl_node)
 );
 CREATE SEQUENCE id_ctl_node_seq START WITH 1100;

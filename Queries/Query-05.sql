@@ -16,3 +16,23 @@ JOIN (
 CONNECT BY NOCYCLE PRIOR n.ID_CTL_NODE = n.ID_PARENT
 START WITH n.ID_PARENT IS NULL
 ORDER SIBLINGS BY n.NAME;
+
+SELECT
+    n.NAME AS NODENAME,LEVEL
+FROM T_CTL_NODE n
+WHERE LEVEL=1
+CONNECT BY NOCYCLE PRIOR n.ID_CTL_NODE = n.ID_PARENT
+START WITH n.ID_PARENT = 1001
+ORDER SIBLINGS BY n.NAME;
+
+SELECT id_ctl_node, id_parent
+                          FROM t_ctl_node
+                          WHERE id_ctl_node != 1001
+                          CONNECT BY id_parent = PRIOR id_ctl_node
+                          START WITH id_ctl_node = 1001
+                          ORDER BY LEVEL;
+
+SELECT id_ctl_node, id_parent FROM t_ctl_node
+        WHERE LEVEL=2
+        CONNECT BY id_parent = PRIOR id_ctl_node
+        START WITH id_ctl_node = 1001;
