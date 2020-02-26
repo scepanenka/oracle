@@ -46,9 +46,10 @@ CREATE TABLE t_rest_hist
 (
     id_ware NUMBER NOT NULL,
     dt_beg DATE NOT NULL,
-    dt_end DATE NOT NULL,
+    dt_end DATE,
     qty NUMBER(6) NOT NULL,
-    CONSTRAINT rest_hist_qty_ch CHECK ( qty >=0 )
+    CONSTRAINT rest_hist_qty_ch CHECK ( qty >=0 ),
+    CONSTRAINT rest_hist_u UNIQUE (id_ware, dt_end)
 );
 
 CREATE TABLE t_ctl_node
@@ -60,6 +61,17 @@ CREATE TABLE t_ctl_node
     name VARCHAR2(100) NOT NULL,
     PRIMARY KEY (id_ctl_node)
 );
+CREATE SEQUENCE id_ctl_node_seq START WITH 1100;
+CREATE OR REPLACE TRIGGER t_ctl_node_bir_trg
+BEFORE INSERT ON t_ctl_node
+FOR EACH ROW
+BEGIN
+  SELECT id_ctl_node_seq.NEXTVAL
+  INTO   :new.id_ctl_node
+  FROM   dual;
+END t_ctl_node_bir_trg;
+/
+
 
 CREATE TABLE t_model (
     id_model NUMBER,
